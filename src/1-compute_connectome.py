@@ -40,7 +40,7 @@ dataset_path = working_dir/'dataset'
 
 dataset_url = 'https://github.com/datalad-datasets/hcp-functional-connectivity.git'
 
-print('Cloning dataset in {dataset_path}')
+print(f'Cloning dataset in {dataset_path}')
 dataset = datalad.api.install(path=dataset_path, source=dataset_url)
 print('Dataset cloned')
 # %% 
@@ -50,17 +50,23 @@ print('Dataset cloned')
 subject_data_path = Path(subject) / 'MNINonLinear' / 'Results' / 'rfMRI_REST1_LR'
 
 # Path to the RS Nifti (relative to datalad dataset)
+print('Getting data')
 rsfmri_fname = subject_data_path / 'rfMRI_REST1_LR_hp2000_clean.nii.gz'
 dataset.get(rsfmri_fname)
+print('Data received')
 
 # get confound
+print('Getting confounds file')
 confounds_fname = subject_data_path / 'Movement_Regressors.txt'
 dataset.get(confounds_fname)
+print('confound file received')
 
 # %%
 # Get Atlas
+print('Getting atlas')
 atlas = nilearn.datasets.fetch_atlas_schaefer_2018(n_rois=100,resolution_mm=2)
 atlas_filename = atlas.maps
+print('Atlas received')
 
 # %% https://nilearn.github.io/auto_examples/03_connectivity/plot_signal_extraction.html
 # #sphx-glr-auto-examples-03-connectivity-plot-signal-extraction-py
@@ -71,12 +77,16 @@ masker = NiftiLabelsMasker(labels_img=atlas_filename, standardize=True, verbose=
 
 full_rsfmri_fname = dataset_path / rsfmri_fname
 full_confounds_fname = dataset_path / confounds_fname
+
+print('Masking time series')
 time_series = masker.fit_transform(full_rsfmri_fname.as_posix(), confounds=full_confounds_fname.as_posix())
 
 # %%
 # Compute FC
+print('Computing connectivity')
 correlation_measure = ConnectivityMeasure(kind='correlation')
 correlation_matrix = correlation_measure.fit_transform([time_series])[0]
+print('Connectivity done')
 
 # %%
 # Plot the correlation matrix
@@ -97,6 +107,8 @@ correlation_matrix = correlation_measure.fit_transform([time_series])[0]
 # %%
 # Save Connectome to mat file
 
+print(f'Create results directory {results_dir.as_posix()}')
+
 results_dir.mkdir(exist_ok=True, parents=True)
 results_fname = results_dir / f'{subject}_connectome.mat'
 to_save = {
@@ -104,4 +116,8 @@ to_save = {
     'labels': atlas.labels
 } # define dictionary to save as mat
 sio.savemat(results_fname, to_save)
+
+print ('ALL DONE')
+
+
 
