@@ -1,0 +1,23 @@
+# The environment
+universe       = vanilla
+getenv         = True
+
+# resources
+request_cpus   = 1
+request_memory = 100M
+request_disk   = 0
+
+# Execution
+initial_dir    = /home/smore/csguidehandson/src
+executable     = $(initial_dir)/run_in_venv.sh
+transfer_executable = False
+
+arguments      = csguide python 1-compute_connectome.py /tmp /data/project/deleted_every_sunday/smore $(subject)
+
+# Job
+log            = $(initial_dir)/logs/$(Cluster).$(Process).log
+output         = $(initial_dir)/logs/$(Cluster).$(Process).out
+error          = $(initial_dir)/logs/$(Cluster).$(Process).err
+
+subject = 100206
+queue
