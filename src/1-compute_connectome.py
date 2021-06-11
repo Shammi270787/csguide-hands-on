@@ -1,14 +1,21 @@
 # INPUT:
+# 1. working_dir: path to the directory to clone dataset
+# 2. results_dir: path to the directory where to place results
+# 3. subject: subject_id
 # 
 # DESCRIPTION:
 # The script clones the HCP datadet (functional connectivity) and
 # compute the whole-brain resting state connectome using schaefer's atlas
 # with 100 parcels
+# 
 # OUTPUT:
+# A file named {subject}_connectome.mat with the correlation matrix and 
+# atlas labels in results_dir
 # 
 
 # %%
 # Imports
+import sys
 from pathlib import Path
 import nilearn.datasets
 
@@ -24,13 +31,23 @@ from nilearn.connectome import ConnectivityMeasure
 # Variables
 
 # Path to the working directory (relative to CWD)
-working_dir = Path('../scratch')
+# working_dir = Path('../scratch')
+working_dir = sys.argv[1]
 
 # Path to the results directory (relative to CWD)
-results_dir = Path('../scratch')
+# results_dir = Path('../scratch')
+results_dir = sys.argv[2]
 
 # subject to compute
-subject = '100206'
+# subject = '100206'
+subject = sys.argv[3]
+
+print(f'INPUT working_dir = {working_dir}')
+print(f'INPUT results_dir = {results_dir}')
+print(f'INPUT subject = {subject}')
+
+working_dir = Path(working_dir)
+results_dir = Path(results_dir)
 
 # %%
 # Install datalad dataset
